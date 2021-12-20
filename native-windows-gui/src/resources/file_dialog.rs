@@ -52,6 +52,7 @@ impl FileDialog {
     pub fn builder() -> FileDialogBuilder {
         FileDialogBuilder {
             title: None,
+            filename: None,
             action: FileDialogAction::Save,
             multiselect: false,
             default_folder: None,
@@ -186,6 +187,15 @@ impl FileDialog {
         }
     }
 
+    /// 设置save默认名称
+    pub fn set_filename<'a>(&self,filename: &'a str) {
+        unsafe{
+            let filename = to_utf16(filename);
+            let handle = &mut *self.handle;
+            handle.SetFileName(filename.as_ptr());
+        }
+    }
+
     /// Instructs the dialog to clear all persisted state information (such as the last folder visited).
     pub fn clear_client_data(&self) { 
         unsafe{
@@ -227,6 +237,7 @@ impl Eq for FileDialog {}
 */
 pub struct FileDialogBuilder {
     pub title: Option<String>,
+    pub filename:   Option<String>,
     pub action: FileDialogAction,
     pub multiselect: bool,
     pub default_folder: Option<String>,
@@ -239,6 +250,11 @@ impl FileDialogBuilder {
         self.title = Some(t.into());
         self
     }
+
+    pub fn  filename<S: Into<String>>(mut self,t:S)->   FileDialogBuilder {
+    self.filename = Some(t.into());
+    self
+}
 
     pub fn default_folder<S: Into<String>>(mut self, t: S) -> FileDialogBuilder {
         self.default_folder = Some(t.into());
@@ -274,6 +290,10 @@ impl FileDialogBuilder {
         
         if let Some(title) = self.title {
             out.set_title(&title);
+        }
+
+        if  let Some(filename) = self.filename{
+            out.set_filename(&filename);
         }
 
         Ok(())

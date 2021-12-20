@@ -229,7 +229,9 @@ mod partial_controls_test_ui {
             FileDialog::builder()
                 .action(FileDialogAction::Save)
                 .title("Save a file")
+                .filename("abcde.txt")
                 .filters("Text(*.txt)|Any(*.*)")
+
                 .build(&mut data.save_file_dialog)?;
 
             ColorDialog::builder()
